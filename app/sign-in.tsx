@@ -1,23 +1,25 @@
+import { useAuth } from '@/context/AuthContext';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useRef, useState } from 'react';
 import {
-    Animated,
-    Dimensions,
-    Easing,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Animated,
+  Dimensions,
+  Easing,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 
 const DailyDareSignIn = () => {
+  const {signIn, signUp} = useAuth()
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -123,7 +125,7 @@ const DailyDareSignIn = () => {
     }).start();
   };
 
-  const handleSignIn = () => {
+  const handleSignIn = async() => {
     if (!email || !password) {
       // Shake animation for empty fields
       Animated.sequence([
@@ -136,6 +138,13 @@ const DailyDareSignIn = () => {
     }
     
     setIsLoading(true);
+    try {
+      const response = await signIn(email, password)
+      console.log(response);
+      
+    } catch (error) {
+      
+    }
     
     // Simulate API call with success animation
     setTimeout(() => {

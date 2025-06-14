@@ -1,0 +1,33 @@
+import { PrismaClient } from "@prisma/client";
+import { Router } from "express";
+
+export const userRouter = Router()
+
+const prisma = new PrismaClient()
+
+userRouter.post('/signin', async(req, res)=>{
+    const { email, password } = req.body
+    try {
+        const existingUser = await prisma.user.findFirst({
+            where:{
+                email
+            }
+        })
+        if(!existingUser){
+            res.status(403).json({message:"No such user"})
+            return
+        }
+        if(existingUser.password !== password){
+            res.status(404).json({message:"Check Password"})
+            return
+        }
+        res.status(200).json({message:"Done", user: existingUser})
+        return
+        
+    } catch (error) {
+        res.status(500).json({message:"Internal Error"})
+        console.log(error);
+        
+        return
+    }
+})
