@@ -5,32 +5,69 @@ export const authRouter = Router()
 
 const prisma = new PrismaClient()
 
-authRouter.post('/signin', async(req, res)=>{
-    const { email, password } = req.body
+
+
+authRouter.post('/signin', async(req, res) => {
     try {
-        const existingUser = await prisma.user.findFirst({
-            where:{
-                email
+        const { email, password } = req.body;
+        
+        const user = await prisma.user.findUnique({
+            where: { email },
+            include: {
+                profile: true,
+                challenges: {
+                    orderBy: { createdAt: 'desc' }
+                },
+                friends: {
+                    select: {
+                        id: true,
+                        username: true,
+                        name: true
+                    }
+                }
             }
-        })
-        if(!existingUser){
-            res.status(400).json({message:"No such user"})
+        });
+        console.log(user);
+        
+
+        if (!user) {
+            res.status(404).json({ 
+                success: false,
+                message: "User not found" 
+            });
             return
         }
-        if(existingUser.password !== password){
-            res.status(404).json({message:"Check Password"})
+
+        if (user.password !== password) {  
+             res.status(401).json({ 
+                success: false,
+                message: "Invalid credentials" 
+            });
             return
         }
-        res.status(200).json({message:"Done", user: existingUser})
+
+        const { password: _, ...safeUser } = user;
+        
+
+     res.status(200).json({
+            success: true,
+            message: "Signed in successfully",
+            data: {
+                user: safeUser,
+                token:''
+            }
+        });
         return
-        
+
     } catch (error) {
-        res.status(500).json({message:"Internal Error"})
-        console.log(error);
-        
+        console.error('Signin error:', error);
+         res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        });
         return
     }
-})
+});
 
 authRouter.post('/signup', async(req, res)=>{
     const { email, password, username } = req.body
@@ -57,7 +94,8 @@ authRouter.post('/signup', async(req, res)=>{
             data:{
                 username,
                 email,
-                password
+                password,
+
             }
         })
         res.status(200).json({message:"Done", user: saveUser})

@@ -44,8 +44,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         AsyncStorage.getItem('authToken'),
         AsyncStorage.getItem('user'),
       ]);
+      console.log(storedToken, "Tokne");
+      console.log("User", storedUser);
+      
+      
 
-      if (storedToken && storedUser) {
+      if (storedUser) {
         setState({
           user: JSON.parse(storedUser),
           token: storedToken,
@@ -71,21 +75,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       const data = await response.json();
+      console.log(data, 'Data');
+      
 
       if (!response.ok) {
         throw new Error(data.message);
       }
 
-      await Promise.all([
-        AsyncStorage.setItem('authToken', data.token),
-        AsyncStorage.setItem('user', JSON.stringify(data.user)),
-      ]);
+      console.log(data.data.user);
+      
 
+      await Promise.all([
+        AsyncStorage.setItem('authToken', data.data.token), // Changed from data.token
+        AsyncStorage.setItem('userId', JSON.stringify(data.data.user.id)), // Changed from data.user
+      ]);
+      if(response.ok){
       setState({
-        user: data.user,
+        user: data.data.user,
         token: data.token,
         isLoading: false,
       });
+    }
     } catch (error) {
       console.error('Sign in error:', error);
       throw error;

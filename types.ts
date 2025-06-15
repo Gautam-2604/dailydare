@@ -7,3 +7,13 @@ export type Dare = {
     timeLimit: string;
     participants: number;
   };
+
+  export interface FriendRequest {
+    id: number;
+    username: string;
+    avatar?: string;
+    mutualFriends: number;
+    dateRequested: string;
+    completedDares: number;
+    points: number;
+  }

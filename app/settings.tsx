@@ -1,4 +1,5 @@
 import { useAuth } from '@/context/AuthContext';
+import { useProfile } from '@/context/ProfileContext';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
@@ -19,22 +20,14 @@ import {
 const AccountSettingsPage = () => {
   const router  =useRouter()
   const [activeSection, setActiveSection] = useState('account');
-  const {signOut} = useAuth()
+  const {signOut, ...state} = useAuth()
+  const {profile} = useProfile()
 
   const handleSignOut = async()=>{
     signOut()
     router.push('/sign-in')
   }
-  const [userProfile, setUserProfile] = useState({
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    username: 'johndoe_dev',
-    bio: 'Passionate developer who loves challenges!',
-    streak: 7,
-    totalPoints: 1250,
-    level: 'Intermediate',
-    joinDate: 'January 2024',
-  });
+  const [userProfile, setUserProfile] = useState(profile);
 
   type SettingKey =
     | 'notifications'
@@ -85,13 +78,12 @@ const AccountSettingsPage = () => {
           colors={['#4FFFB0', '#00D4AA']}
           style={styles.avatarContainer}
         >
-          <Text style={styles.avatarText}>
+          {/* <Text style={styles.avatarText}>
             {userProfile.name.split(' ').map(n => n[0]).join('')}
-          </Text>
+          </Text> */}
         </LinearGradient>
         
         <View style={styles.profileInfo}>
-          <Text style={styles.profileName}>{userProfile.name}</Text>
           <Text style={styles.profileLevel}>{userProfile.level} Challenger</Text>
         </View>
         
@@ -118,7 +110,7 @@ const AccountSettingsPage = () => {
           <Text style={styles.statLabel}>Total Points</Text>
         </View>
         <View style={styles.statItem}>
-          <Text style={styles.statNumber}>23</Text>
+          <Text style={styles.statNumber}>{userProfile.daresCompleted}</Text>
           <Text style={styles.statLabel}>Completed</Text>
         </View>
       </View>
@@ -172,20 +164,20 @@ const AccountSettingsPage = () => {
         <View style={styles.profileDetails}>
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Email</Text>
-            <Text style={styles.detailValue}>{userProfile.email}</Text>
+            <Text style={styles.detailValue}>{state.user?.email}</Text>
           </View>
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Username</Text>
-            <Text style={styles.detailValue}>@{userProfile.username}</Text>
+            <Text style={styles.detailValue}>@{state.user?.username}</Text>
           </View>
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Bio</Text>
             <Text style={styles.detailValue}>{userProfile.bio}</Text>
           </View>
-          <View style={styles.detailRow}>
+          {/* <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Member Since</Text>
-            <Text style={styles.detailValue}>{userProfile.joinDate}</Text>
-          </View>
+            <Text style={styles.detailValue}>{state.user}</Text>
+          </View> */}
         </View>
 
       )}
@@ -318,6 +310,10 @@ const AccountSettingsPage = () => {
       </View>
     </View>
   );
+
+  if(!state || !state.user){
+    router.push('/sign-in')
+  }
 
   return (
     <SafeAreaView style={styles.container}>

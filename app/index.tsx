@@ -1,9 +1,11 @@
 import { useAuth } from '@/context/AuthContext';
+import { useProfile } from '@/context/ProfileContext';
 import { Dare } from '@/types';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
   Dimensions,
   SafeAreaView,
   ScrollView,
@@ -17,44 +19,11 @@ import {
 const { width, height } = Dimensions.get('window');
 
 const DailyDareHome = () => {
-  const [userStats, setUserStats] = useState({
-    streak: 7,
-    points: 1250,
-    completedDares: 23,
-    friendsConnected: 12,
-  });
 
   const {...state} = useAuth()
+  const {profile} = useProfile()
 
-  const [activeDares] = useState([
-    {
-      id: 1,
-      title: "Learn 10 Spanish Words",
-      category: "Language",
-      difficulty: "Easy",
-      points: 50,
-      timeLimit: "2 hours",
-      participants: 3,
-    },
-    {
-      id: 2,
-      title: "Code a Mini Game",
-      category: "Programming",
-      difficulty: "Hard",
-      points: 200,
-      timeLimit: "1 day",
-      participants: 5,
-    },
-    {
-      id: 3,
-      title: "Master a Piano Piece",
-      category: "Music",
-      difficulty: "Medium",
-      points: 100,
-      timeLimit: "3 days",
-      participants: 2,
-    },
-  ]);
+ 
 
   const getDifficultyColor = (difficulty: any) => {
     switch (difficulty) {
@@ -64,6 +33,25 @@ const DailyDareHome = () => {
       default: return '#4FFFB0';
     }
   };
+
+     const [activeDares, setActiveDares] = useState<Dare[]>([]);
+
+  useEffect(()=>{
+    const getChallenges = async()=>{
+      const response = await fetch(`http://localhost:7001/api/v1/dare/${state.user?.id}`,{
+        method:'GET',
+        headers:{
+          'authorization':`Bearer ${state.token}`,
+          'Content-Type':'application/json'
+        }
+        
+      })
+      const data = await response.json();
+      setActiveDares(data.challenges); 
+    }
+  },[])
+
+
 
   interface StatCardProps {
     title: string;
@@ -122,6 +110,47 @@ const DailyDareHome = () => {
     </TouchableOpacity>
   );
 
+  const [isLoading, setIsLoading] = useState(false);
+
+useEffect(() => {
+    const getChallenges = async () => {
+      try {
+        console.log('Starting');
+        
+        setIsLoading(true);
+        const response = await fetch(`http://localhost:7001/api/v1/dare/${state.user?.id}`, {
+          method: 'GET',
+          headers: {
+            'authorization': `Bearer ${state.token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        console.log(response);
+        
+        const data = await response.json();
+        setActiveDares(data.challenges);
+      } catch (error) {
+        console.error('Error fetching challenges:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (state.user?.id) {
+      getChallenges();
+    }
+}, []);
+
+// Replace your loading check with:
+if (isLoading || !state.user?.id) {
+  return (
+    <SafeAreaView >
+      <ActivityIndicator size="large" color="#4FFFB0" />
+      <Text>Loading your challenges...</Text>
+    </SafeAreaView>
+  );
+}
+  
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#0A0A0A" />
@@ -151,14 +180,14 @@ const DailyDareHome = () => {
           <View style={styles.statsContainer}>
             <Text style={styles.sectionTitle}>Your Progress</Text>
             <View style={styles.statsGrid}>
-              <StatCard title="Streak Days" value={userStats.streak} color="#4FFFB0" />
-              <StatCard title="Total Points" value={userStats.points} color="#FFD700" />
-              <StatCard title="Completed" value={userStats.completedDares} color="#FF6B6B" />
-              <StatCard title="Friends" value={userStats.friendsConnected} color="#8A2BE2" />
+              <StatCard title="Streak Days" value={profile.streak} color="#4FFFB0" />
+              <StatCard title="Total Points" value={profile.totalPoints} color="#FFD700" />
+              <StatCard title="Completed" value={profile.daresCompleted} color="#FF6B6B" />
+              <StatCard title="Friends" value={profile.friendsConnected} color="#8A2BE2" />
             </View>
           </View>
 
-          {/* Daily Challenge */}
+          {/* Daily Challenge
           <View style={styles.dailyChallengeContainer}>
             <Text style={styles.sectionTitle}>Today's Featured Challenge</Text>
             <TouchableOpacity style={styles.featuredChallenge}>
@@ -177,7 +206,7 @@ const DailyDareHome = () => {
                 </View>
               </LinearGradient>
             </TouchableOpacity>
-          </View>
+          </View> */}
 
           {/* Active Dares */}
           <View style={styles.daresContainer}>
@@ -197,7 +226,7 @@ const DailyDareHome = () => {
           <View style={styles.quickActionsContainer}>
             <Text style={styles.sectionTitle}>Quick Actions</Text>
             <View style={styles.quickActions}>
-              <TouchableOpacity style={styles.quickAction}>
+              <TouchableOpacity style={styles.quickAction} onPress={()=>router.replace('/create-dare')}>
                 <LinearGradient
                   colors={['rgba(79, 255, 176, 0.2)', 'rgba(79, 255, 176, 0.1)']}
                   style={styles.quickActionGradient}

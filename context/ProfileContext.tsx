@@ -7,6 +7,8 @@ interface ProfileState {
   bio: string;
   streak: number;
   totalPoints: number;
+  friendsConnected: number;
+  daresCompleted: number
   level: UserLevel;
     notifications: boolean;
     soundEffects: boolean;
@@ -39,6 +41,8 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
     streak: 0,
     totalPoints: 0,
     level: UserLevel.Beginner,
+    friendsConnected: 0,
+    daresCompleted: 0, 
       notifications: true,
       soundEffects: true,
       darkMode: true,
@@ -55,7 +59,8 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setIsLoading(true);
       setError(null);
 
-      const response = await fetch('http://localhost:7001/api/v1/profile', {
+      const response = await fetch(`http://localhost:7001/api/v1/profile/${state.user?.id}`, {
+        method:'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
         },

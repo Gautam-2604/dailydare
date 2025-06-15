@@ -1,5 +1,7 @@
+
 import { useAuth } from '@/context/AuthContext';
 import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Animated,
@@ -24,6 +26,7 @@ const DailyDareSignIn = () => {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const {...state} = useAuth()
 
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -140,7 +143,10 @@ const DailyDareSignIn = () => {
     setIsLoading(true);
     try {
       const response = await signIn(email, password)
-      console.log(response);
+      if(state && state.user){
+        router.push('/')
+      }
+      
       
     } catch (error) {
       

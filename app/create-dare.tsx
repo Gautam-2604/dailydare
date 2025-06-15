@@ -1,16 +1,19 @@
+import { useAuth } from '@/context/AuthContext';
+import { categoriesArray, difficultyDetails, timeLimitsArray } from '@/enums';
 import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
 import React, { useState } from 'react';
 import {
-    Dimensions,
-    Modal,
-    SafeAreaView,
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Dimensions,
+  Modal,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
@@ -25,53 +28,74 @@ const CreateDarePage = () => {
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [showDifficultyModal, setShowDifficultyModal] = useState(false);
 
-  const categories = [
-    { id: 1, name: 'Programming', icon: '💻', color: '#4FFFB0' },
-    { id: 2, name: 'Language', icon: '🗣️', color: '#FFD700' },
-    { id: 3, name: 'Music', icon: '🎵', color: '#FF6B6B' },
-    { id: 4, name: 'Art', icon: '🎨', color: '#8A2BE2' },
-    { id: 5, name: 'Science', icon: '🔬', color: '#00D4AA' },
-    { id: 6, name: 'Fitness', icon: '💪', color: '#FF8E8E' },
-  ];
+  const {...state} = useAuth()
 
-  const difficulties = [
-    { name: 'Easy', color: '#4FFFB0', points: 50 },
-    { name: 'Medium', color: '#FFD700', points: 100 },
-    { name: 'Hard', color: '#FF6B6B', points: 200 },
-  ];
+  const calculateEndDate = (startDate: Date, timeLimit: string): Date => {
+  const end = new Date(startDate);
+  
+  switch (timeLimit) {
+    case '1 hour':
+      end.setHours(end.getHours() + 1);
+      break;
+    case '3 hours':
+      end.setHours(end.getHours() + 3);
+      break;
+    case '6 hours':
+      end.setHours(end.getHours() + 6);
+      break;
+    case '1 day':
+      end.setDate(end.getDate() + 1);
+      break;
+    case '3 days':
+      end.setDate(end.getDate() + 3);
+      break;
+    case '1 week':
+      end.setDate(end.getDate() + 7);
+      break;
+    default:
+      end.setHours(end.getHours() + 24); // Default to 1 day
+  }
+  return end}
 
-  const timeLimits = ['1 hour', '3 hours', '6 hours', '1 day', '3 days', '1 week'];
-
-  const handleCreateDare = () => {
-    if (dareTitle && selectedCategory && selectedDifficulty) {
-      // Create dare logic here
-      console.log('Creating dare:', {
+  const handleCreateDare = async() => {
+    const startDate = new Date();
+    const endDate = calculateEndDate(startDate, timeLimit);
+    const response = await fetch(`http://localhost:7001/api/v1/dare/${state.user?.id}`,{
+      method: 'POST',
+      headers: {
+        'authorization': `Bearer ${state.token}`,
+        'Content-Type': 'application/json'  
+      },
+      body: JSON.stringify({
         title: dareTitle,
         description: dareDescription,
-        category: selectedCategory,
         difficulty: selectedDifficulty,
-        timeLimit,
-        points,
-      });
+        startDate: startDate.toISOString(),
+        endDate:endDate.toISOString(),
+        categories: selectedCategory,
+        points: parseInt(points)
+      })
+    });
+
+    if (response.ok) {
+      router.replace('/'); // Redirect to home on success
     }
-  };
+};
 
   const CategoryModal = () => (
     <Modal visible={showCategoryModal} transparent animationType="slide">
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>Select Category</Text>
-          {categories.map((category) => (
+          {categoriesArray.map((category) => (
             <TouchableOpacity
-              key={category.id}
               style={styles.modalOption}
               onPress={() => {
-                setSelectedCategory(category.name);
+                setSelectedCategory(category);
                 setShowCategoryModal(false);
               }}
             >
-              <Text style={styles.categoryIcon}>{category.icon}</Text>
-              <Text style={styles.modalOptionText}>{category.name}</Text>
+              <Text style={styles.modalOptionText}>{category}</Text>
             </TouchableOpacity>
           ))}
           <TouchableOpacity
@@ -90,7 +114,7 @@ const CreateDarePage = () => {
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>Select Difficulty</Text>
-          {difficulties.map((difficulty) => (
+          {difficultyDetails.map((difficulty) => (
             <TouchableOpacity
               key={difficulty.name}
               style={styles.modalOption}
@@ -127,7 +151,7 @@ const CreateDarePage = () => {
         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
           {/* Header */}
           <View style={styles.header}>
-            <TouchableOpacity style={styles.backButton}>
+            <TouchableOpacity style={styles.backButton} onPress={()=>router.replace('/')}>
               <Text style={styles.backText}>←</Text>
             </TouchableOpacity>
             <Text style={styles.title}>Create New Dare</Text>
@@ -194,7 +218,7 @@ const CreateDarePage = () => {
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Time Limit</Text>
               <View style={styles.timeLimitContainer}>
-                {timeLimits.map((time) => (
+                {timeLimitsArray.map((time) => (
                   <TouchableOpacity
                     key={time}
                     style={[
@@ -241,7 +265,7 @@ const CreateDarePage = () => {
                       {selectedDifficulty && (
                         <View style={[
                           styles.previewDifficultyBadge,
-                          { backgroundColor: difficulties.find(d => d.name === selectedDifficulty)?.color }
+                          { backgroundColor: difficultyDetails.find(d => d.name === selectedDifficulty)?.color }
                         ]}>
                           <Text style={styles.previewDifficultyText}>{selectedDifficulty}</Text>
                         </View>

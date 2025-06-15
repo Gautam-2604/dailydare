@@ -58,6 +58,8 @@ model UserProfile {
   streak        Int       @default(0)
   totalPoints   Int       @default(0)
   level         String    @default("Beginner")
+  daresCompleted Int      @default(0)
+  friendsConnected        Int      @default(0)
   
   notifications       Boolean   @default(true)
   soundEffects        Boolean   @default(true)
@@ -84,11 +86,13 @@ model Challenge {
   startDate    DateTime   @default(now())
   completedAt  DateTime?
   isCompleted  Boolean    @default(false)
-  streakCount  Int        @default(0)
+  Category     String[]
+  difficulty   String
 
   userId       String
   user         User       @relation(fields: [userId], references: [id])
 
   createdAt    DateTime   @default(now())
+  endsAt       DateTime
   updatedAt    DateTime   @updatedAt
 }
