@@ -142,7 +142,7 @@ const DailyDareHome = () => {
               <Text style={styles.greeting}>Good Evening! 🌟</Text>
               <Text style={styles.username}>Ready for today's challenge?</Text>
             </View>
-            <TouchableOpacity style={styles.profileButton} onPress={() => router.replace('/find-dare')}>
+            <TouchableOpacity style={styles.profileButton} onPress={() => router.replace('/settings')}>
               <LinearGradient
                 colors={['#4FFFB0', '#00D4AA']}
                 style={styles.profileGradient}

@@ -1,18 +1,19 @@
+import { useAuth } from '@/context/AuthContext';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useRef, useState } from 'react';
 import {
-    Animated,
-    Dimensions,
-    Easing,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Animated,
+  Dimensions,
+  Easing,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
@@ -116,11 +117,18 @@ const DailyDareSignUp = () => {
       useNativeDriver: true,
     }).start();
   };
+  const {signUp} = useAuth()
 
-  const handleSignUp = () => {
+  const handleSignUp = async() => {
     setIsLoading(true);
-    
-    // Simulate API call with success animation
+    try {
+      const response = await signUp(email, username, password)
+      console.log(response);
+      
+    } catch (error) {
+      console.log(error);
+      
+    }
     setTimeout(() => {
       setIsLoading(false);
       
