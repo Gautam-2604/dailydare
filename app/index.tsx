@@ -1,3 +1,5 @@
+import { useAuth } from '@/context/AuthContext';
+import { Dare } from '@/types';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
@@ -15,13 +17,14 @@ import {
 const { width, height } = Dimensions.get('window');
 
 const DailyDareHome = () => {
-  const [activeTab, setActiveTab] = useState('home');
   const [userStats, setUserStats] = useState({
     streak: 7,
     points: 1250,
     completedDares: 23,
     friendsConnected: 12,
   });
+
+  const {...state} = useAuth()
 
   const [activeDares] = useState([
     {
@@ -62,7 +65,7 @@ const DailyDareHome = () => {
     }
   };
 
-  type StatCardProps = {
+  interface StatCardProps {
     title: string;
     value: number | string;
     color: string;
@@ -75,15 +78,7 @@ const DailyDareHome = () => {
     </View>
   );
 
-  type Dare = {
-    id: number;
-    title: string;
-    category: string;
-    difficulty: string;
-    points: number;
-    timeLimit: string;
-    participants: number;
-  };
+  
 
   const DareCard: React.FC<{ dare: Dare }> = ({ dare }) => (
     <TouchableOpacity style={styles.dareCard}>

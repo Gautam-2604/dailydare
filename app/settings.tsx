@@ -1,23 +1,30 @@
+import { useAuth } from '@/context/AuthContext';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-    Alert,
-    Dimensions,
-    SafeAreaView,
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Switch,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
 
-const { width, height } = Dimensions.get('window');
 
 const AccountSettingsPage = () => {
+  const router  =useRouter()
   const [activeSection, setActiveSection] = useState('account');
+  const {signOut} = useAuth()
+
+  const handleSignOut = async()=>{
+    signOut()
+    router.push('/sign-in')
+  }
   const [userProfile, setUserProfile] = useState({
     name: 'John Doe',
     email: 'john.doe@example.com',
@@ -180,7 +187,16 @@ const AccountSettingsPage = () => {
             <Text style={styles.detailValue}>{userProfile.joinDate}</Text>
           </View>
         </View>
+
       )}
+
+      <View style={styles.dangerZone}>
+        
+        <TouchableOpacity style={styles.dangerButton} onPress={()=>handleSignOut()}>
+          <Text style={styles.dangerText}>SignOut</Text>
+        </TouchableOpacity>
+        
+      </View>
     </View>
   );
 
@@ -313,7 +329,7 @@ const AccountSettingsPage = () => {
       >
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity style={styles.backButton}>
+          <TouchableOpacity style={styles.backButton} onPress={()=>router.back()}>
             <Text style={styles.backIcon}>←</Text>
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Account & Settings</Text>

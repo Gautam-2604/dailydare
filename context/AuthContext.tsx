@@ -62,7 +62,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signIn = async (email: string, password: string) => {
     try {
-      // Replace with your actual API call
       const response = await fetch('http://localhost:7001/api/v1/auth/signin', {
         method: 'POST',
         headers: {
