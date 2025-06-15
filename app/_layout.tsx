@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 
 import { AuthProvider } from '@/context/AuthContext';
+import { ProfileProvider } from '@/context/ProfileContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import SplashScreenComponent from './SplashScreen';
 
@@ -31,6 +32,7 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
+      <ProfileProvider>
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack screenOptions={{
         headerStyle: {
@@ -43,6 +45,7 @@ export default function RootLayout() {
         <Stack.Screen name="create-dare" options={{ headerShown: false }} />
         <Stack.Screen name="find-dare" options={{ headerShown: false }} />
         <Stack.Screen name="settings" options={{ headerShown: false }} />
+        <Stack.Screen name="friends" options={{ headerShown: false }} />
         <Stack.Screen 
           name="sign-up" 
           options={{ 
@@ -67,6 +70,7 @@ export default function RootLayout() {
       </Stack>
       <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
     </ThemeProvider>
+    </ProfileProvider>
     </AuthProvider>
   );
 }

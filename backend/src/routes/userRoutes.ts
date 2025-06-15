@@ -1,71 +1,109 @@
 import { PrismaClient } from "@prisma/client";
 import { Router } from "express";
 
-export const userRouter = Router()
-
 const prisma = new PrismaClient()
 
-userRouter.post('/signin', async(req, res)=>{
-    const { email, password } = req.body
-    try {
-        const existingUser = await prisma.user.findFirst({
-            where:{
-                email
-            }
-        })
-        if(!existingUser){
-            res.status(400).json({message:"No such user"})
-            return
+export const userRouter = Router()
+
+userRouter.get('/profile/:id', async(req, res)=>{
+    const {id} = req.params
+    const user = await prisma.userProfile.findFirst({
+        where:{
+            userId: id
         }
-        if(existingUser.password !== password){
-            res.status(404).json({message:"Check Password"})
-            return
-        }
-        res.status(200).json({message:"Done", user: existingUser})
-        return
-        
-    } catch (error) {
-        res.status(500).json({message:"Internal Error"})
-        console.log(error);
-        
-        return
-    }
+    })
+
+    res.status(200).json({
+        message:"Your user Profile",
+        user: user
+    })
+    return;
+
 })
 
-userRouter.post('/signup', async(req, res)=>{
-    const { email, password, username } = req.body
+userRouter.put('/profile/:id', async(req, res) => {
     try {
-        const existingUser = await prisma.user.findFirst({
-            where:{
-                email
+        const { id } = req.params;
+        const updateData = req.body;
+        const existingProfile = await prisma.userProfile.findFirst({
+            where: {
+                userId: id
             }
-        })
-        if(existingUser){
-            res.status(400).json({message:"User already there, please signin"})
-            return
+        });
+
+        if (!existingProfile) {
+            res.status(404).json({
+                message: "User profile not found"
+            });
+            return 
         }
-        const sameUsername = await prisma.user.findFirst({
-            where:{
-                username
+
+        const updatedProfile = await prisma.userProfile.update({
+            where: {
+                userId: id
+            },
+            data: {
+                bio: updateData.bio,
+                notifications: updateData.notifications,
+                soundEffects: updateData.soundEffects,
+                darkMode: updateData.darkMode,
+                publicProfile: updateData.publicProfile,
+                friendRequests: updateData.friendRequests,
+                challengeReminders: updateData.challengeReminders,
+                weeklyReport: updateData.weeklyReport,
+                dataSync: updateData.dataSync
+                
             }
-        })
-        if(sameUsername){
-            res.status(404).json({message:"Same username"})
-            return
-        }
-        const saveUser = await prisma.user.create({
-            data:{
-                username,
-                email,
-                password
-            }
-        })
-        res.status(200).json({message:"Done", user: saveUser})
-        return
-        
+        });
+
+        res.status(200).json({
+            message: "Profile updated successfully",
+            profile: updatedProfile
+        });
+        return;
     } catch (error) {
-        res.status(500).json({message:"Internal Error"})
-        console.log(error);
+        console.error('Profile update error:', error);
+        res.status(500).json({
+            message: "Failed to update profile",
+            error: error instanceof Error ? error.message : "Unknown error occurred"
+        });
         return
     }
-})
+});
+
+userRouter.delete('/profile/:id', async(req, res) => {
+    try {
+        const { id } = req.params;
+        const existingProfile = await prisma.userProfile.findFirst({
+            where: {
+                userId: id
+            }
+        });
+
+        if (!existingProfile) {
+            res.status(404).json({
+                message: "User profile not found"
+            });
+            return 
+        }
+
+        const updatedProfile = await prisma.userProfile.delete({
+            where: {
+                userId: id
+            }
+        });
+
+        res.status(200).json({
+            message: "Profile updated successfully",
+            profile: updatedProfile
+        });
+        return;
+    } catch (error) {
+        console.error('Profile update error:', error);
+        res.status(500).json({
+            message: "Failed to update profile",
+            error: error instanceof Error ? error.message : "Unknown error occurred"
+        });
+        return
+    }
+});

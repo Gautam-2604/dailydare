@@ -207,7 +207,7 @@ const DailyDareHome = () => {
                 </LinearGradient>
               </TouchableOpacity>
               
-              <TouchableOpacity style={styles.quickAction}>
+              <TouchableOpacity style={styles.quickAction} onPress={()=>router.replace('/friends')}>
                 <LinearGradient
                   colors={['rgba(255, 215, 0, 0.2)', 'rgba(255, 215, 0, 0.1)']}
                   style={styles.quickActionGradient}
