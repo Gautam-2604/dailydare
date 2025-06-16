@@ -98,7 +98,25 @@ authRouter.post('/signup', async(req, res)=>{
 
             }
         })
-        res.status(200).json({message:"Done", user: saveUser})
+
+        const newUserprofile = await prisma.userProfile.create({
+    data: {
+        userId: saveUser.id,  
+        streak: 0,           
+        daresCompleted: 0,   
+        totalPoints: 0,           
+        level: "Beginner",           
+        bio: ""  
+    }
+});
+
+res.status(200).json({
+    message: "Done", 
+    user: {
+        ...saveUser,
+        profile: newUserprofile
+    }
+});
         return
         
     } catch (error) {

@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Challenge" ALTER COLUMN "Category" SET NOT NULL,
+ALTER COLUMN "Category" SET DATA TYPE TEXT;

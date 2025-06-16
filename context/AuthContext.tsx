@@ -7,10 +7,6 @@ interface User {
   username: string;
 }
 
-
-
-
-
 interface AuthState {
   user: User | null;
   token: string | null;
@@ -34,7 +30,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   useEffect(() => {
-    // Check for stored authentication state when app loads
     loadStoredAuth();
   }, []);
 
@@ -75,27 +70,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       const data = await response.json();
-      console.log(data, 'Data');
-      
 
       if (!response.ok) {
         throw new Error(data.message);
       }
 
-      console.log(data.data.user);
-      
-
+      // Store both token and user data consistently
       await Promise.all([
-        AsyncStorage.setItem('authToken', data.data.token), // Changed from data.token
-        AsyncStorage.setItem('userId', JSON.stringify(data.data.user.id)), // Changed from data.user
+        AsyncStorage.setItem('authToken', data.data.token),
+        AsyncStorage.setItem('user', JSON.stringify(data.data.user))
       ]);
-      if(response.ok){
+
+      // Set state unconditionally with correct data structure
       setState({
         user: data.data.user,
-        token: data.token,
+        token: data.data.token,
         isLoading: false,
       });
-    }
+      
     } catch (error) {
       console.error('Sign in error:', error);
       throw error;

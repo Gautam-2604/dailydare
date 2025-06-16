@@ -86,7 +86,7 @@ model Challenge {
   startDate    DateTime   @default(now())
   completedAt  DateTime?
   isCompleted  Boolean    @default(false)
-  Category     String[]
+  Category     String
   difficulty   String
 
   userId       String

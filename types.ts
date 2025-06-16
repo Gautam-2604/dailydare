@@ -6,6 +6,10 @@ export type Dare = {
     points: number;
     timeLimit: string;
     participants: number;
+    startDate: Date;
+    Category: String;
+    endsAt: Date;
+    isCompleted: String
   };
 
   export interface FriendRequest {

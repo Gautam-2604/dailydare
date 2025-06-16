@@ -19,9 +19,16 @@ import {
 const { width, height } = Dimensions.get('window');
 
 const DailyDareHome = () => {
+  console.log("Start here");
+  
 
-  const {...state} = useAuth()
+  const state = useAuth()
+  console.log("2nd", state);
+  
   const {profile} = useProfile()
+
+  console.log(profile, "Profile");
+  
 
  
 
@@ -36,21 +43,37 @@ const DailyDareHome = () => {
 
      const [activeDares, setActiveDares] = useState<Dare[]>([]);
 
-  useEffect(()=>{
-    const getChallenges = async()=>{
-      const response = await fetch(`http://localhost:7001/api/v1/dare/${state.user?.id}`,{
-        method:'GET',
-        headers:{
-          'authorization':`Bearer ${state.token}`,
-          'Content-Type':'application/json'
-        }
-        
-      })
-      const data = await response.json();
-      setActiveDares(data.challenges); 
-    }
-  },[])
+console.log("4th");
 
+// Add this function inside DailyDareHome component
+const handleChallengeCompletion = async (dare: Dare) => {
+  try {
+
+    console.log("Startig");
+    
+
+    setActiveDares(prevDares => prevDares.filter(d => d.id !== dare.id));
+    await Promise.all([
+      fetch(`http://localhost:7001/api/v1/profile/streak/${state.user?.id}`, {
+        method: 'PUT',
+        headers: {
+          'authorization': `Bearer ${state.token}`,
+          'Content-Type': 'application/json'
+        }
+      }),
+      fetch(`http://localhost:7001/api/v1/profile/completed/${state.user?.id}`, {
+        method: 'PUT',
+        headers: {
+          'authorization': `Bearer ${state.token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+    ]);
+
+  } catch (error) {
+    console.error('Error completing challenge:', error);
+  }
+};
 
 
   interface StatCardProps {
@@ -65,54 +88,63 @@ const DailyDareHome = () => {
       <Text style={styles.statTitle}>{title}</Text>
     </View>
   );
-
-  
-
-  const DareCard: React.FC<{ dare: Dare }> = ({ dare }) => (
-    <TouchableOpacity style={styles.dareCard}>
-      <LinearGradient
-        colors={['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.05)']}
-        style={styles.dareGradient}
-      >
-        <View style={styles.dareHeader}>
-          <Text style={styles.dareTitle}>{dare.title}</Text>
-          <View style={[styles.difficultyBadge, { backgroundColor: getDifficultyColor(dare.difficulty) }]}>
-            <Text style={styles.difficultyText}>{dare.difficulty}</Text>
-          </View>
+const DareCard: React.FC<{ dare: Dare }> = ({ dare }) => (
+  <TouchableOpacity style={styles.dareCard}>
+    <LinearGradient
+      colors={['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.05)']}
+      style={styles.dareGradient}
+    >
+      <View style={styles.dareHeader}>
+        <Text style={styles.dareTitle}>{dare.title}</Text>
+        <View style={[styles.difficultyBadge, { backgroundColor: getDifficultyColor(dare.difficulty) }]}>
+          <Text style={styles.difficultyText}>{dare.difficulty}</Text>
         </View>
-        
-        <Text style={styles.dareCategory}>{dare.category}</Text>
-        
-        <View style={styles.dareInfo}>
-          <View style={styles.infoItem}>
-            <Text style={styles.infoLabel}>Points</Text>
-            <Text style={styles.infoValue}>{dare.points}</Text>
-          </View>
-          <View style={styles.infoItem}>
-            <Text style={styles.infoLabel}>Time</Text>
-            <Text style={styles.infoValue}>{dare.timeLimit}</Text>
-          </View>
-          <View style={styles.infoItem}>
-            <Text style={styles.infoLabel}>Friends</Text>
-            <Text style={styles.infoValue}>{dare.participants}</Text>
-          </View>
+      </View>
+      
+      <Text style={styles.dareCategory}>{dare.Category}</Text>
+      
+      <View style={styles.dareInfo}>
+        <View style={styles.infoItem}>
+          <Text style={styles.infoLabel}>Start Date</Text>
+          <Text style={styles.infoValue}>
+            {new Date(dare.startDate).toLocaleDateString()}
+          </Text>
         </View>
-        
-        <TouchableOpacity style={styles.joinButton}>
-          <LinearGradient
-            colors={['#FF6B6B', '#FF8E8E']}
-            style={styles.joinGradient}
-          >
-            <Text style={styles.joinText}>Join Dare</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-      </LinearGradient>
-    </TouchableOpacity>
-  );
+        <View style={styles.infoItem}>
+          <Text style={styles.infoLabel}>End Date</Text>
+          <Text style={styles.infoValue}>
+            {new Date(dare.endsAt).toLocaleDateString()}
+          </Text>
+        </View>
+        <View style={styles.infoItem}>
+          <Text style={styles.infoLabel}>Status</Text>
+          <Text style={styles.infoValue}>
+            {dare.isCompleted ? 'Completed' : 'Ongoing'}
+          </Text>
+        </View>
+      </View>
+      
+      <TouchableOpacity style={styles.joinButton} onPress={()=>handleChallengeCompletion(dare)}>
+        <LinearGradient
+          colors={['#FF6B6B', '#FF8E8E']}
+          style={styles.joinGradient}
+        >
+          <Text style={styles.joinText}>
+            {dare.isCompleted ? 'View Details' : 'Complete Challenge'}
+          </Text>
+        </LinearGradient>
+      </TouchableOpacity>
+    </LinearGradient>
+  </TouchableOpacity>
+);
 
   const [isLoading, setIsLoading] = useState(false);
+  console.log('5th');
+  
 
 useEffect(() => {
+    console.log('Starting useEffecr');
+    
     const getChallenges = async () => {
       try {
         console.log('Starting');
@@ -125,7 +157,7 @@ useEffect(() => {
             'Content-Type': 'application/json'
           }
         });
-        console.log(response);
+        console.log(response, "Response");
         
         const data = await response.json();
         setActiveDares(data.challenges);
@@ -143,6 +175,7 @@ useEffect(() => {
 
 // Replace your loading check with:
 if (isLoading || !state.user?.id) {
+  router.push('/sign-in')
   return (
     <SafeAreaView >
       <ActivityIndicator size="large" color="#4FFFB0" />
