@@ -173,16 +173,20 @@ useEffect(() => {
     }
 }, []);
 
-// Replace your loading check with:
-if (isLoading || !state.user?.id) {
-  router.push('/sign-in')
-  return (
-    <SafeAreaView >
-      <ActivityIndicator size="large" color="#4FFFB0" />
-      <Text>Loading your challenges...</Text>
-    </SafeAreaView>
-  );
-}
+useEffect(() => {
+    if (!state.user?.id && !isLoading) {
+      router.replace('/sign-in');
+    }
+  }, [state.user, isLoading]);
+
+  if (isLoading) {
+    return (
+      <SafeAreaView>
+        <ActivityIndicator size="large" color="#4FFFB0" />
+        <Text>Loading your challenges...</Text>
+      </SafeAreaView>
+    );
+  }
   
   return (
     <SafeAreaView style={styles.container}>
