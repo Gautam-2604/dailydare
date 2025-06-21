@@ -32,7 +32,7 @@ const FriendsPage = () => {
   useEffect(() => {
     const getRequests = async () => {
       const responseone = await fetch(
-        `http://localhost:7001/api/v1/user/incomingfriends/${state.user?.id}`,
+        `https://dailydare-backend-2.onrender.com/api/v1/user/incomingfriends/${state.user?.id}`,
         {
           method: "GET",
           headers: {
@@ -43,7 +43,7 @@ const FriendsPage = () => {
       const dataOne = await responseone.json();
 
       const responsetwo = await fetch(
-        `http://localhost:7001/api/v1/user/outgoingfriends/${state.user?.id}`,
+        `https://dailydare-backend-2.onrender.com/api/v1/user/outgoingfriends/${state.user?.id}`,
         {
           method: "GET",
           headers: {
@@ -153,7 +153,7 @@ const FriendsPage = () => {
   const handleSendRequest = async () => {
     try {
       const response = await fetch(
-        `http://localhost:7001/api/v1/user/friend-request/${state.user?.id}`,
+        `https://dailydare-backend-2.onrender.com/api/v1/user/friend-request/${state.user?.id}`,
         {
           method: "POST",
           headers: {

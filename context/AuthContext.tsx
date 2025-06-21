@@ -61,7 +61,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signIn = async (email: string, password: string) => {
     try {
-      const response = await fetch('http://localhost:7001/api/v1/auth/signin', {
+      const response = await fetch('https://dailydare-backend-2.onrender.com/api/v1/auth/signin', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -96,7 +96,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signUp = async (email: string, username: string, password: string) => {
     try {
-      const response = await fetch('http://localhost:7001/api/v1/auth/signup', {
+      const response = await fetch('https://dailydare-backend-2.onrender.com/api/v1/auth/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -105,13 +105,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       const data = await response.json();
+      console.log(data, "Data");
+      
 
       if (!response.ok) {
         throw new Error(data.message);
       }
 
       await Promise.all([
-        AsyncStorage.setItem('authToken', data.token),
         AsyncStorage.setItem('user', JSON.stringify(data.user)),
       ]);
 
@@ -146,7 +147,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const refreshToken = async () => {
     try {
-      const response = await fetch('YOUR_API_URL/auth/refresh', {
+      const response = await fetch('https://dailydare-backend-2.onrender.com/auth/refresh', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${state.token}`,

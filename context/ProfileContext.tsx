@@ -59,7 +59,7 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setIsLoading(true);
       setError(null);
 
-      const response = await fetch(`http://localhost:7001/api/v1/profile/${state.user?.id}`, {
+      const response = await fetch(`https://dailydare-backend-2.onrender.com/api/v1/profile/${state.user?.id}`, {
         method:'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -109,7 +109,7 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setProfile(newProfile);
       await AsyncStorage.setItem('userProfile', JSON.stringify(newProfile));
 
-      const response = await fetch(`http://localhost:7001/api/v1/user/profile/${state.user?.id}`, {
+      const response = await fetch(`https://dailydare-backend-2.onrender.com/api/v1/user/profile/${state.user?.id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -149,7 +149,7 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setProfile(newProfile);
       await AsyncStorage.setItem('userProfile', JSON.stringify(newProfile));
 
-      const response = await fetch(`http://localhost:7001/api/v1/user/profile/${state.user?.id}`, {
+      const response = await fetch(`https://dailydare-backend-2.onrender.com/api/v1/user/profile/${state.user?.id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

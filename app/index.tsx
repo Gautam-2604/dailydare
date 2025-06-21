@@ -54,14 +54,14 @@ const handleChallengeCompletion = async (dare: Dare) => {
 
     setActiveDares(prevDares => prevDares.filter(d => d.id !== dare.id));
     await Promise.all([
-      fetch(`http://localhost:7001/api/v1/profile/streak/${state.user?.id}`, {
+      fetch(`https://dailydare-backend-2.onrender.com/api/v1/profile/streak/${state.user?.id}`, {
         method: 'PUT',
         headers: {
           'authorization': `Bearer ${state.token}`,
           'Content-Type': 'application/json'
         }
       }),
-      fetch(`http://localhost:7001/api/v1/profile/completed/${state.user?.id}`, {
+      fetch(`https://dailydare-backend-2.onrender.com/api/v1/profile/completed/${state.user?.id}`, {
         method: 'PUT',
         headers: {
           'authorization': `Bearer ${state.token}`,
@@ -150,7 +150,7 @@ useEffect(() => {
         console.log('Starting');
         
         setIsLoading(true);
-        const response = await fetch(`http://localhost:7001/api/v1/dare/${state.user?.id}`, {
+        const response = await fetch(`https://dailydare-backend-2.onrender.com/api/v1/dare/${state.user?.id}`, {
           method: 'GET',
           headers: {
             'authorization': `Bearer ${state.token}`,

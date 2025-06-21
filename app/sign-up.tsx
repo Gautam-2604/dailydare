@@ -1,5 +1,6 @@
 import { useAuth } from '@/context/AuthContext';
 import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Animated,
@@ -316,7 +317,7 @@ const DailyDareSignUp = () => {
               
 
               {/* Login Link */}
-              <TouchableOpacity style={styles.loginLink}>
+              <TouchableOpacity style={styles.loginLink} onPress={()=>router.push('/sign-in')}>
                 <Text style={styles.loginText}>
                   Already have an account? <Text style={styles.loginHighlight}>Sign In</Text>
                 </Text>

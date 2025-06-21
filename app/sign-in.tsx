@@ -371,7 +371,7 @@ const DailyDareSignIn = () => {
 
 
               {/* Sign Up Link */}
-              <TouchableOpacity style={styles.signUpLink}>
+              <TouchableOpacity style={styles.signUpLink} onPress={()=>router.push('/sign-up')}>
                 <Text style={styles.signUpText}>
                   New to DailyDare? <Text style={styles.signUpHighlight}>Join the Adventure!</Text>
                 </Text>
