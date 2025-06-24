@@ -25,6 +25,7 @@ const DailyDareSignUp = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const {...state} = useAuth()
 
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -125,6 +126,9 @@ const DailyDareSignUp = () => {
     try {
       const response = await signUp(email, username, password)
       console.log(response);
+      if(state && state.user){
+              router.push('/')
+          }
       
     } catch (error) {
       console.log(error);
