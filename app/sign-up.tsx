@@ -224,6 +224,7 @@ const DailyDareSignUp = () => {
               </View>
               <Text style={styles.title}>DailyDare</Text>
               <Text style={styles.subtitle}>Challenge • Learn • Connect</Text>
+              <Text style={styles.subtitle}>Please Sign in with - "email":"gaurisariaa@gmail.com", "password":"Mom@0000"</Text>
             </Animated.View>
 
             {/* Form Container */}

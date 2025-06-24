@@ -282,6 +282,7 @@ const DailyDareSignIn = () => {
                 ]}
               >
                 <Text style={styles.subtitle}>Ready for your next challenge?</Text>
+                <Text style={styles.subtitle}>Please Sign in with - "email":"gaurisariaa@gmail.com", "password":"Mom@0000"</Text>
               </Animated.View>
             </Animated.View>
 
